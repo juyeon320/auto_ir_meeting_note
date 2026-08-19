@@ -19,7 +19,7 @@ from flask import Flask, jsonify, render_template, request, send_from_directory
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # core.py, prompts.py 참조용
 
-from anthropic import Anthropic
+from openai import OpenAI
 from core import run_pipeline, build_docx, build_email_draft, fill_email_main_content
 
 app = Flask(__name__)
@@ -68,7 +68,7 @@ def process():
     job_dir.mkdir(parents=True, exist_ok=True)
 
     try:
-        client = Anthropic()  # ANTHROPIC_API_KEY 환경변수 필요
+        client = OpenAI()  # OPENAI_API_KEY 환경변수 필요
         qa_list, topic_bullets = run_pipeline(client, transcript_text)
     except Exception as e:
         return jsonify({"error": f"Q&A 추출 중 오류가 발생했습니다: {e}"}), 500

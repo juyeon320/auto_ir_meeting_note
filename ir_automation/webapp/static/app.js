@@ -70,6 +70,61 @@ function stopLoadingMessages() {
   clearInterval(loadingInterval);
 }
 
+// ---- 자동 필드 계산 ----
+const WEEKDAY_KR = ["일", "월", "화", "수", "목", "금", "토"];
+
+function pad2(n) {
+  return String(n).padStart(2, "0");
+}
+
+function timeToKorean(hhmm) {
+  // "14:00" -> {ampm: "오후", hh: "14", mm: "00"}
+  const [h, m] = hhmm.split(":").map(Number);
+  const ampm = h < 12 ? "오전" : "오후";
+  return { ampm, hh: pad2(h), mm: pad2(m) };
+}
+
+function buildAutoFields() {
+  const now = new Date();
+  const yyyy = now.getFullYear();
+  const yy = String(yyyy).slice(2);
+  const mm = pad2(now.getMonth() + 1);
+  const dd = pad2(now.getDate());
+  const weekday = WEEKDAY_KR[now.getDay()];
+
+  const startRaw = document.getElementById("f_start_time").value || "14:00";
+  const endRaw = document.getElementById("f_end_time").value || "15:30";
+  const start = timeToKorean(startRaw);
+  const end = timeToKorean(endRaw);
+
+  const targetOrg = document.getElementById("f_target_org").value.trim();
+
+  // 1. 일시 (문서용, 전체 표기)
+  const datetime = `${yyyy}년 ${mm}월 ${dd}일 ${start.ampm} ${start.hh}시 ${start.mm}분 ~ ${end.hh}시 ${end.mm}분`;
+
+  // 2. 이메일 제목용 날짜 (예: 260819)
+  const email_date_short = `${yy}${mm}${dd}`;
+
+  // 3. 이메일 본문용 날짜/시간 (예: 8월 19일 (수) 14시 00분)
+  const email_date_long = `${now.getMonth() + 1}월 ${now.getDate()}일 (${weekday}) ${start.hh}시 ${start.mm}분`;
+
+  // 4. 파일명 / 첨부파일명 (예: 260819 OOO자산운용 미팅)
+  const file_base = `${email_date_short} ${targetOrg} 미팅`;
+
+  return {
+    datetime,
+    ir_type: document.getElementById("f_ir_type").value,
+    target_org: targetOrg,
+    attendees: "Noel, Judy",
+    notes: document.getElementById("f_notes").value.trim() || "없음",
+    sender_name: "Judy",
+    file_base,
+    email_date_short,
+    email_date_long,
+    attachment_base: file_base,
+  };
+}
+
 // ---- 제출 ----
 submitBtn.addEventListener("click", async () => {
   errorMsg.textContent = "";
@@ -79,26 +134,13 @@ submitBtn.addEventListener("click", async () => {
     return;
   }
 
-  const fields = {
-    datetime: document.getElementById("f_datetime").value.trim(),
-    ir_type: document.getElementById("f_ir_type").value.trim(),
-    target_org: document.getElementById("f_target_org").value.trim(),
-    attendees: document.getElementById("f_attendees").value.trim(),
-    notes: document.getElementById("f_notes").value.trim(),
-    sender_name: document.getElementById("f_sender_name").value.trim(),
-    file_base: document.getElementById("f_file_base").value.trim(),
-    email_date_short: document.getElementById("f_email_date_short").value.trim(),
-    email_date_long: document.getElementById("f_email_date_long").value.trim(),
-    attachment_base: document.getElementById("f_attachment_base").value.trim(),
-  };
-
-  const required = ["datetime", "target_org", "attendees", "sender_name", "file_base", "email_date_short", "email_date_long", "attachment_base"];
-  for (const key of required) {
-    if (!fields[key]) {
-      errorMsg.textContent = "미팅 정보 / 이메일 정보를 모두 채워주세요.";
-      return;
-    }
+  const targetOrg = document.getElementById("f_target_org").value.trim();
+  if (!targetOrg) {
+    errorMsg.textContent = "IR 대상기관을 입력해주세요.";
+    return;
   }
+
+  const fields = buildAutoFields();
 
   const formData = new FormData();
   formData.append("transcript", selectedFile);
@@ -149,7 +191,6 @@ function renderResult(data) {
   downloadDocx.href = `/api/download/${data.job_id}/${encodeURIComponent(data.files.docx)}`;
   downloadEmail.href = `/api/download/${data.job_id}/${encodeURIComponent(data.files.email)}`;
 
-  // 도장 애니메이션
   requestAnimationFrame(() => {
     stamp.classList.add("is-stamped");
   });

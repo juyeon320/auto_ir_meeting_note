@@ -35,51 +35,31 @@
 
       <div class="field-grid">
         <label class="field">
-          <span>일시</span>
-          <input type="text" id="f_datetime" placeholder="2026년 08월 19일 오후 14시 00분 ~ 15시 30분">
-        </label>
-        <label class="field">
           <span>IR 형태</span>
-          <input type="text" id="f_ir_type" placeholder="기업탐방" value="기업탐방">
+          <select id="f_ir_type">
+            <option value="기업탐방">기업탐방</option>
+            <option value="컨퍼런스콜">컨퍼런스콜</option>
+          </select>
         </label>
         <label class="field field--wide">
           <span>IR 대상기관</span>
           <input type="text" id="f_target_org" placeholder="OOO자산운용 OOO 선임 외 1인">
         </label>
         <label class="field">
-          <span>참석인원</span>
-          <input type="text" id="f_attendees" placeholder="Noel, Judy">
+          <span>시작 시간</span>
+          <input type="time" id="f_start_time" value="14:00">
         </label>
         <label class="field">
-          <span>특이사항</span>
-          <input type="text" id="f_notes" placeholder="없음" value="없음">
-        </label>
-      </div>
-
-      <h2 class="card__label">03 · 이메일 정보</h2>
-
-      <div class="field-grid">
-        <label class="field">
-          <span>보내는 사람</span>
-          <input type="text" id="f_sender_name" placeholder="Judy">
-        </label>
-        <label class="field">
-          <span>파일명 (확장자 제외)</span>
-          <input type="text" id="f_file_base" placeholder="260819 OOO자산운용 미팅">
-        </label>
-        <label class="field">
-          <span>제목용 날짜 (예: 260819)</span>
-          <input type="text" id="f_email_date_short" placeholder="260819">
-        </label>
-        <label class="field">
-          <span>본문용 날짜/시간</span>
-          <input type="text" id="f_email_date_long" placeholder="8월 19일 (수) 14시 00분">
+          <span>종료 시간</span>
+          <input type="time" id="f_end_time" value="15:30">
         </label>
         <label class="field field--wide">
-          <span>첨부파일명</span>
-          <input type="text" id="f_attachment_base" placeholder="260819 OOO자산운용 미팅">
+          <span>특이사항 (선택)</span>
+          <input type="text" id="f_notes" placeholder="없음">
         </label>
       </div>
+
+      <p class="auto-note">일시는 오늘 날짜로, 참석인원·보내는사람·파일명·첨부파일명은 자동으로 채워집니다.</p>
 
       <button class="btn-primary" id="submitBtn">
         <span id="submitBtnText">Q&amp;A 정리 시작</span>
@@ -123,7 +103,7 @@
 
   </main>
 
-  <footer class="footer">로컬에서만 실행됩니다 · Q&amp;A 추출 시에만 Claude API로 텍스트가 전송됩니다.</footer>
+  <footer class="footer">로컬에서만 실행됩니다 · Q&amp;A 추출 시에만 API로 텍스트가 전송됩니다.</footer>
 
 </div>
 

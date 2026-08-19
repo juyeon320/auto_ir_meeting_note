@@ -8,7 +8,7 @@ import json
 import re
 from pathlib import Path
 
-from anthropic import Anthropic
+from openai import OpenAI
 from docx import Document
 from docx.shared import Pt
 from docx.oxml.ns import qn
@@ -20,21 +20,28 @@ from prompts import (
     build_user_message,
 )
 
-MODEL = "claude-sonnet-4-5"  # 필요시 최신 모델 스트링으로 교체하세요
+MODEL = "gpt-5-mini"  # 필요시 원하는 모델로 교체하세요 (gpt-5, gpt-5-mini, gpt-5-nano 등)
 
 
 # ---------------------------------------------------------------------------
-# Claude 호출
+# OpenAI 호출
 # ---------------------------------------------------------------------------
 
-def call_claude(client, system_prompt, user_message, max_tokens=8000):
-    resp = client.messages.create(
+def call_openai(client, system_prompt, user_message, max_tokens=8000, force_json=False):
+    kwargs = {}
+    if force_json:
+        kwargs["response_format"] = {"type": "json_object"}
+
+    resp = client.chat.completions.create(
         model=MODEL,
-        max_tokens=max_tokens,
-        system=system_prompt,
-        messages=[{"role": "user", "content": user_message}],
+        max_completion_tokens=max_tokens,
+        messages=[
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_message},
+        ],
+        **kwargs,
     )
-    return "".join(block.text for block in resp.content if block.type == "text")
+    return resp.choices[0].message.content
 
 
 def extract_json(text: str):
@@ -46,13 +53,15 @@ def extract_json(text: str):
 
 def extract_qa(client, transcript: str):
     user_msg = build_user_message(transcript)
-    raw = call_claude(client, QA_EXTRACTION_SYSTEM_PROMPT, user_msg)
-    return extract_json(raw)
+    raw = call_openai(client, QA_EXTRACTION_SYSTEM_PROMPT, user_msg, force_json=True)
+    data = extract_json(raw)
+    # 모델이 {"qa": [...]} 형태로 감싸서 줄 수도 있어 양쪽 다 처리
+    return data["qa"] if isinstance(data, dict) and "qa" in data else data
 
 
 def summarize_topics(client, qa_list):
     qa_text = "\n".join(f"Q: {item['q']}\nA: {item['a']}" for item in qa_list)
-    raw = call_claude(client, TOPIC_SUMMARY_SYSTEM_PROMPT, qa_text, max_tokens=1000)
+    raw = call_openai(client, TOPIC_SUMMARY_SYSTEM_PROMPT, qa_text, max_tokens=1000, force_json=True)
     return extract_json(raw)["bullets"]
 
 

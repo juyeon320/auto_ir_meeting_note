@@ -14,7 +14,7 @@ import argparse
 import json
 from pathlib import Path
 
-from anthropic import Anthropic
+from openai import OpenAI
 
 from core import run_pipeline, build_docx, build_email_draft, fill_email_main_content
 
@@ -32,7 +32,7 @@ def main():
     outdir = Path(args.outdir)
     outdir.mkdir(parents=True, exist_ok=True)
 
-    client = Anthropic()  # ANTHROPIC_API_KEY 환경변수 사용
+    client = OpenAI()  # OPENAI_API_KEY 환경변수 사용
 
     print("[1/3] Q&A 추출 중...")
     qa_list, topic_bullets = run_pipeline(client, transcript)
