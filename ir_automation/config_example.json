@@ -1,0 +1,16 @@
+{
+  "datetime": "2026년 00월 00일 오후 00시 00분 ~ 00시 00분",
+  "ir_type": "기업탐방",
+  "target_org": "OOO자산운용 OOO 선임 외 1인",
+  "attendees": "Noel, Judy",
+  "notes": "없음",
+
+  "file_base": "260000 OOO자산운용 미팅",
+
+  "sender_name": "Judy",
+  "email_date_short": "260000",
+  "email_date_long": "0월 0일 (0) 00시 00분",
+  "attachment_base": "260000 OOO자산운용 미팅",
+
+  "_참고": "실제 미팅 전엔 이 파일을 config.json으로 복사해서 값만 채우세요. config.json은 .gitignore에 걸려 있어 커밋되지 않습니다. email_main_content를 직접 넣지 않으면 Claude가 요약한 주요 논의 내용으로 자동 채워집니다."
+}
