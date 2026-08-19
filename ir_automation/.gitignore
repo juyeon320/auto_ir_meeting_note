@@ -7,6 +7,7 @@ transcript*.txt
 config.json
 output/
 *_qa.json
+webapp/jobs/
 
 # 파이썬
 __pycache__/
@@ -16,4 +17,3 @@ venv/
 
 # OS
 .DS_Store
-test_email.txt
