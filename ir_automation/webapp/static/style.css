@@ -1,32 +1,36 @@
 /* ==========================================================================
    토큰
-   Paper: 차분한 회색빛 종이 톤 (크림+테라코타 조합 지양)
-   Ink:   깊은 잉크 네이비 (본문/헤더)
-   Stamp: 도장 레드 (완료 시그니처 요소)
-   Brass: 클립/철끈 색 (보조 강조)
+   Paper: 몽글몽글 핑크 파스텔
+   Ink:   쿠로미 다크 퍼플/블랙
+   Stamp: 비비드 핫핑크 (완료 시그니처 요소)
+   Brass: 라벤더 퍼플 (보조 강조)
    ========================================================================== */
 :root {
-  --paper: #E7E4DA;
-  --paper-card: #F4F2EC;
-  --ink: #202A36;
-  --ink-soft: #4B5563;
-  --line: #C9C4B4;
-  --stamp-red: #A23B34;
-  --brass: #8C7A4B;
-  --ok-bg: #EFEAD8;
+  --paper: #FFE1EF;
+  --paper-card: #FFF3F9;
+  --ink: #3A2340;
+  --ink-soft: #7A5C82;
+  --line: #F2B8D6;
+  --stamp-red: #FF3E9A;
+  --brass: #B084CC;
+  --ok-bg: #FFD6EC;
 
-  --font-display: "Noto Serif KR", serif;
+  --pixel: "Press Start 2P", "DungGeunMo", monospace;
+  --font-display: "Pretendard", "Noto Sans KR", sans-serif;
   --font-body: "Pretendard", -apple-system, sans-serif;
   --font-mono: "IBM Plex Mono", monospace;
 }
 
-* { box-sizing: border-box; }
+* { box-sizing: border-box; image-rendering: pixelated; }
 
 body {
   margin: 0;
   background: var(--paper);
   background-image:
-    repeating-linear-gradient(0deg, rgba(0,0,0,0.015) 0px, rgba(0,0,0,0.015) 1px, transparent 1px, transparent 32px);
+    repeating-linear-gradient(0deg, rgba(255,255,255,0.4) 0px, rgba(255,255,255,0.4) 2px, transparent 2px, transparent 16px),
+    repeating-linear-gradient(90deg, rgba(255,255,255,0.4) 0px, rgba(255,255,255,0.4) 2px, transparent 2px, transparent 16px),
+    radial-gradient(circle at 15% 20%, #FFD1E8 0%, transparent 40%),
+    radial-gradient(circle at 85% 80%, #F3C6FF 0%, transparent 40%);
   color: var(--ink);
   font-family: var(--font-body);
   min-height: 100vh;
@@ -36,13 +40,68 @@ body {
   max-width: 1080px;
   margin: 0 auto;
   padding: 48px 24px 80px;
+  position: relative;
+}
+
+/* ---------- 픽셀 쿠로미 데코 (CSS로 그린 도트 캐릭터) ---------- */
+.pixel-kuromi {
+  position: absolute;
+  width: 48px;
+  height: 48px;
+  image-rendering: pixelated;
+  pointer-events: none;
+  z-index: 5;
+  filter: drop-shadow(0 2px 0 rgba(58,35,64,0.15));
+}
+.pixel-kuromi::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    /* 두건 실루엣 (검정) */
+    linear-gradient(#000 0 0);
+  background-size: 4px 4px;
+  /* box-shadow 픽셀아트: 각 점을 4px 블록으로 배치 */
+  box-shadow:
+    16px 0 #000, 20px 0 #000, 24px 0 #000, 28px 0 #000,
+    12px 4px #000, 16px 4px #000, 20px 4px #FFF, 24px 4px #000, 28px 4px #FFF, 32px 4px #000,
+    8px 8px #000, 12px 8px #000, 16px 8px #FFF, 20px 8px #000, 24px 8px #FFF, 28px 8px #000, 32px 8px #000, 36px 8px #000,
+    4px 12px #000, 8px 12px #FFF, 12px 12px #FFF, 16px 12px #000, 20px 12px #000, 24px 12px #000, 28px 12px #FFF, 32px 12px #FFF, 36px 12px #000, 40px 12px #000,
+    4px 16px #000, 8px 16px #FFF, 12px 16px #000, 16px 16px #000, 20px 16px #000, 24px 16px #000, 28px 16px #000, 32px 16px #FFF, 36px 16px #000, 40px 16px #000,
+    4px 20px #000, 8px 20px #000, 12px 20px #000, 16px 20px #FF3E9A, 20px 20px #000, 24px 20px #000, 28px 20px #FF3E9A, 32px 20px #000, 36px 20px #000, 40px 20px #000,
+    4px 24px #000, 8px 24px #000, 12px 24px #000, 16px 24px #000, 20px 24px #000, 24px 24px #000, 28px 24px #000, 32px 24px #000, 36px 24px #000, 40px 24px #000,
+    8px 28px #000, 12px 28px #FFD9EC, 16px 28px #FFD9EC, 20px 28px #FFD9EC, 24px 28px #FFD9EC, 28px 28px #FFD9EC, 32px 28px #FFD9EC, 36px 28px #000,
+    8px 32px #000, 12px 32px #FFD9EC, 16px 32px #000, 20px 32px #FFD9EC, 24px 32px #FFD9EC, 28px 32px #000, 32px 32px #FFD9EC, 36px 32px #000,
+    8px 36px #000, 12px 36px #000, 16px 36px #000, 20px 36px #000, 24px 36px #000, 28px 36px #000, 32px 36px #000, 36px 36px #000;
+}
+.pixel-kuromi--tl { top: -8px; left: -16px; transform: rotate(-8deg) scaleX(-1); }
+.pixel-kuromi--tr { top: 6px; right: -10px; transform: rotate(6deg); opacity: 0.9; }
+.pixel-kuromi--card { top: -14px; right: 16px; transform: scale(0.85) rotate(4deg); }
+.pixel-kuromi--footer { position: static; display: inline-block; transform: scale(0.7); vertical-align: middle; margin: 0 6px; }
+
+/* 작은 픽셀 하트 스프링클 */
+.pixel-heart {
+  display: inline-block;
+  width: 10px; height: 8px;
+  position: relative;
+  image-rendering: pixelated;
+}
+.pixel-heart::before {
+  content: "";
+  position: absolute; inset: 0;
+  box-shadow:
+    2px 0 #FF3E9A, 3px 0 #FF3E9A, 6px 0 #FF3E9A, 7px 0 #FF3E9A,
+    1px 2px #FF3E9A, 2px 2px #FF3E9A, 3px 2px #FF3E9A, 4px 2px #FF3E9A, 5px 2px #FF3E9A, 6px 2px #FF3E9A, 7px 2px #FF3E9A, 8px 2px #FF3E9A,
+    2px 4px #FF3E9A, 3px 4px #FF3E9A, 4px 4px #FF3E9A, 5px 4px #FF3E9A, 6px 4px #FF3E9A, 7px 4px #FF3E9A,
+    3px 6px #FF3E9A, 4px 6px #FF3E9A, 5px 6px #FF3E9A, 6px 6px #FF3E9A;
 }
 
 /* ---------- Masthead ---------- */
 .masthead {
-  border-bottom: 2px solid var(--ink);
+  border-bottom: 3px dashed var(--stamp-red);
   padding-bottom: 20px;
   margin-bottom: 36px;
+  position: relative;
 }
 .masthead__eyebrow {
   font-family: var(--font-mono);
@@ -50,13 +109,16 @@ body {
   letter-spacing: 0.12em;
   color: var(--brass);
   margin-bottom: 6px;
+  font-weight: 700;
 }
 .masthead__title {
   font-family: var(--font-display);
-  font-weight: 700;
+  font-weight: 800;
   font-size: 34px;
   margin: 0 0 8px;
   letter-spacing: -0.01em;
+  color: var(--stamp-red);
+  text-shadow: 3px 3px 0 #FFF, 5px 5px 0 rgba(176,132,204,0.4);
 }
 .masthead__sub {
   font-size: 15px;
@@ -79,21 +141,26 @@ body {
 
 .card {
   background: var(--paper-card);
-  border: 1px solid var(--line);
-  border-radius: 3px;
+  border: 3px solid var(--stamp-red);
+  border-radius: 18px;
   padding: 28px;
-  box-shadow: 0 1px 0 rgba(0,0,0,0.04);
+  box-shadow: 6px 6px 0 rgba(255,62,154,0.18), 0 0 0 6px #FFF inset;
+  position: relative;
+  overflow: visible;
 }
 
 .card__label {
   font-family: var(--font-mono);
   font-size: 12px;
   letter-spacing: 0.08em;
-  color: var(--ink-soft);
+  color: #fff;
   text-transform: uppercase;
-  border-bottom: 1px solid var(--line);
-  padding-bottom: 8px;
+  padding: 6px 12px;
   margin: 28px 0 14px;
+  background: var(--brass);
+  border-radius: 999px;
+  display: inline-block;
+  font-weight: 700;
 }
 .card__label:first-child { margin-top: 0; }
 
@@ -102,17 +169,18 @@ body {
   display: flex;
   align-items: center;
   gap: 12px;
-  border: 1.5px dashed var(--brass);
-  border-radius: 3px;
+  border: 2px dashed var(--brass);
+  border-radius: 14px;
   padding: 18px 16px;
   cursor: pointer;
-  transition: background 0.15s ease, border-color 0.15s ease;
-  background: rgba(140, 122, 75, 0.04);
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+  background: #FFEAF6;
 }
 .dropzone:hover,
 .dropzone.is-dragover {
-  background: rgba(140, 122, 75, 0.1);
+  background: #FFD9EC;
   border-color: var(--stamp-red);
+  transform: scale(1.01);
 }
 .dropzone__icon {
   font-family: var(--font-mono);
@@ -125,7 +193,7 @@ body {
   font-size: 14px;
   color: var(--ink-soft);
 }
-.dropzone.has-file .dropzone__text { color: var(--ink); font-weight: 600; }
+.dropzone.has-file .dropzone__text { color: var(--stamp-red); font-weight: 700; }
 
 /* ---------- Fields ---------- */
 .field-grid {
@@ -141,14 +209,15 @@ body {
   gap: 5px;
   font-size: 12px;
   color: var(--ink-soft);
+  font-weight: 600;
 }
 .field input,
 .field select {
   font-family: var(--font-body);
   font-size: 14px;
   color: var(--ink);
-  border: 1px solid var(--line);
-  border-radius: 2px;
+  border: 2px solid var(--line);
+  border-radius: 10px;
   background: #fff;
   padding: 9px 10px;
 }
@@ -156,7 +225,7 @@ body {
 .field select:focus {
   outline: none;
   border-color: var(--stamp-red);
-  box-shadow: 0 0 0 3px rgba(162,59,52,0.12);
+  box-shadow: 0 0 0 3px rgba(255,62,154,0.18);
 }
 
 .auto-note {
@@ -166,29 +235,42 @@ body {
   line-height: 1.6;
 }
 
+/* ---------- 자동 채움 하이라이트 ---------- */
+.field input.auto-filled,
+.field select.auto-filled {
+  animation: autoFillGlow 1.4s ease-out;
+}
+@keyframes autoFillGlow {
+  0%   { background: #FFD9EC; border-color: var(--stamp-red); box-shadow: 0 0 0 4px rgba(255,62,154,0.25); }
+  100% { background: #fff; border-color: var(--line); box-shadow: 0 0 0 0 rgba(255,62,154,0); }
+}
+
 /* ---------- Button ---------- */
 .btn-primary {
   width: 100%;
   margin-top: 28px;
-  padding: 13px 16px;
+  padding: 14px 16px;
   border: none;
-  border-radius: 2px;
-  background: var(--ink);
+  border-radius: 999px;
+  background: linear-gradient(90deg, #FF3E9A, #B084CC);
   color: #fff;
   font-family: var(--font-body);
-  font-weight: 600;
+  font-weight: 800;
   font-size: 15px;
   cursor: pointer;
-  transition: background 0.15s ease;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+  box-shadow: 0 4px 0 #C22A78;
 }
-.btn-primary:hover { background: var(--stamp-red); }
-.btn-primary:disabled { background: #9CA3AF; cursor: not-allowed; }
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 0 #C22A78; }
+.btn-primary:active { transform: translateY(2px); box-shadow: 0 2px 0 #C22A78; }
+.btn-primary:disabled { background: #E3C9DC; box-shadow: none; cursor: not-allowed; }
 
 .error {
   color: var(--stamp-red);
   font-size: 13px;
   margin: 10px 0 0;
   min-height: 18px;
+  font-weight: 700;
 }
 
 /* ---------- Result ---------- */
@@ -213,7 +295,7 @@ body {
 }
 .spinner {
   width: 28px; height: 28px;
-  border: 3px solid var(--line);
+  border: 4px solid var(--line);
   border-top-color: var(--stamp-red);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
@@ -228,8 +310,10 @@ body {
 }
 .result__subhead {
   font-family: var(--font-display);
+  font-weight: 800;
   font-size: 16px;
   margin: 20px 0 8px;
+  color: var(--stamp-red);
 }
 .topic-list {
   margin: 0;
@@ -250,30 +334,31 @@ body {
   align-items: center;
   gap: 8px;
   padding: 10px 14px;
-  border: 1px solid var(--ink);
-  border-radius: 2px;
-  color: var(--ink);
+  border: 2px solid var(--stamp-red);
+  border-radius: 999px;
+  color: var(--stamp-red);
   text-decoration: none;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 800;
   transition: background 0.15s ease, color 0.15s ease;
+  background: #fff;
 }
-.btn-download:hover { background: var(--ink); color: #fff; }
+.btn-download:hover { background: var(--stamp-red); color: #fff; }
 .btn-download .mono { font-family: var(--font-mono); color: var(--brass); font-weight: 500; }
-.btn-download:hover .mono { color: #E7E4DA; }
+.btn-download:hover .mono { color: #FFE1EF; }
 
-/* ---------- 도장(Stamp) 시그니처 ---------- */
+/* ---------- 도장(Stamp) 시그니처 - 핑크 하트 스탬프 ---------- */
 .stamp {
   position: absolute;
   top: 18px;
   right: 22px;
   width: 92px;
   height: 92px;
-  border: 3px solid var(--stamp-red);
+  border: 4px solid var(--stamp-red);
   border-radius: 50%;
   color: var(--stamp-red);
   font-family: var(--font-display);
-  font-weight: 700;
+  font-weight: 800;
   font-size: 15px;
   display: flex;
   align-items: center;
@@ -284,6 +369,7 @@ body {
   opacity: 0;
   pointer-events: none;
   mix-blend-mode: multiply;
+  background: radial-gradient(circle, #FFF 40%, transparent 41%);
 }
 .stamp.is-stamped {
   animation: stampDown 0.45s cubic-bezier(.2,1.4,.4,1) forwards;
@@ -300,4 +386,5 @@ body {
   text-align: center;
   font-size: 12px;
   color: var(--ink-soft);
+  font-weight: 700;
 }

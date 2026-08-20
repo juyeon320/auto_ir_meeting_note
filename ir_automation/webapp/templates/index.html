@@ -14,7 +14,9 @@
 <div class="page">
 
   <header class="masthead">
-    <div class="masthead__eyebrow">FORM · IR-NOTE</div>
+    <div class="pixel-kuromi pixel-kuromi--tl"></div>
+    <div class="pixel-kuromi pixel-kuromi--tr"></div>
+    <div class="masthead__eyebrow">FORM · IR-NOTE <span class="pixel-heart"></span></div>
     <h1 class="masthead__title">회의록 자동생성</h1>
     <p class="masthead__sub">클로바노트 녹취록을 넣으면 Q&amp;A 요약, 회의록, 이메일 초안까지 한 번에 정리해드립니다.</p>
   </header>
@@ -62,13 +64,14 @@
       <p class="auto-note">일시는 오늘 날짜로, 참석인원·보내는사람·파일명·첨부파일명은 자동으로 채워집니다.</p>
 
       <button class="btn-primary" id="submitBtn">
-        <span id="submitBtnText">Q&amp;A 정리 시작</span>
+        <span id="submitBtnText">Q&amp;A 정리 시작 <span class="pixel-heart"></span></span>
       </button>
       <p class="error" id="errorMsg"></p>
     </section>
 
     <!-- 우측: 결과 -->
     <section class="card result" id="resultCard">
+      <div class="pixel-kuromi pixel-kuromi--card"></div>
       <h2 class="card__label">결과</h2>
 
       <div class="result__empty" id="resultEmpty">
@@ -103,7 +106,11 @@
 
   </main>
 
-  <footer class="footer">로컬에서만 실행됩니다 · Q&amp;A 추출 시에만 API로 텍스트가 전송됩니다.</footer>
+  <footer class="footer">
+    <span class="pixel-kuromi pixel-kuromi--footer"></span>
+    로컬에서만 실행됩니다 · Q&amp;A 추출 시에만 API로 텍스트가 전송됩니다.
+    <span class="pixel-heart"></span>
+  </footer>
 
 </div>
 

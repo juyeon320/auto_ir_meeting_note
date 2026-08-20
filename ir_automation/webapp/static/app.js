@@ -16,6 +16,11 @@ const topicList = document.getElementById("topicList");
 const downloadDocx = document.getElementById("downloadDocx");
 const downloadEmail = document.getElementById("downloadEmail");
 
+const f_ir_type = document.getElementById("f_ir_type");
+const f_target_org = document.getElementById("f_target_org");
+const f_start_time = document.getElementById("f_start_time");
+const f_end_time = document.getElementById("f_end_time");
+
 let selectedFile = null;
 
 // ---- 드롭존 ----
@@ -46,6 +51,92 @@ function setFile(file) {
   selectedFile = file;
   dropzone.classList.add("has-file");
   dropzoneText.textContent = file.name;
+
+  // 텍스트 읽어서 자동 필드 추출 시도
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      autoFillFromTranscript(reader.result);
+    } catch (e) {
+      // 파싱 실패해도 조용히 무시 - 사용자가 수동으로 채우면 됨
+      console.warn("자동 인식 실패:", e);
+    }
+  };
+  reader.readAsText(file, "UTF-8");
+}
+
+// ---- 녹취록 헤더에서 자동 필드 추출 ----
+function autoFillFromTranscript(text) {
+  const lines = text.split("\n").map(l => l.trim()).filter(Boolean);
+  if (lines.length < 2) return;
+
+  // 1번째 줄: "260819 미래인베스트먼트" -> 대상기관명
+  const line1Match = lines[0].match(/^\d{6}\s+(.+)$/);
+  const orgName = line1Match ? line1Match[1].trim() : null;
+
+  // 2번째 줄: "2026.08.19 수 오후 1:59 ・ 64분 45초" -> 시작/종료 시간
+  const line2Match = lines[1].match(
+    /(오전|오후)\s*(\d{1,2}):(\d{2})\s*[·・]?\s*(\d+)\s*분/
+  );
+
+  let startHHMM = null;
+  let endHHMM = null;
+
+  if (line2Match) {
+    const [, ampm, hStr, mStr, durMinStr] = line2Match;
+    let h = parseInt(hStr, 10);
+    const m = parseInt(mStr, 10);
+    const durMin = parseInt(durMinStr, 10);
+
+    if (ampm === "오후" && h !== 12) h += 12;
+    if (ampm === "오전" && h === 12) h = 0;
+
+    const startTotalMin = h * 60 + m;
+    const endTotalMin = startTotalMin + durMin;
+
+    startHHMM = minutesToHHMM(startTotalMin);
+    endHHMM = minutesToHHMM(endTotalMin % (24 * 60));
+  }
+
+  // 본문 키워드로 IR 형태 추정 (대면 vs 비대면)
+  const bodyText = lines.slice(2).join(" ");
+  const remoteHints = ["화상", "전화로", "온라인으로", "컨퍼런스콜", "줌으로"];
+  const onsiteHints = ["오시는 분들", "와주셔서 감사합니다", "찾아다닌다고", "방문"];
+
+  let guessedType = null;
+  if (onsiteHints.some(k => bodyText.includes(k))) guessedType = "기업탐방";
+  else if (remoteHints.some(k => bodyText.includes(k))) guessedType = "컨퍼런스콜";
+
+  // ---- 필드에 반영 (기존에 사용자가 직접 입력한 값은 덮어쓰지 않도록 살짝 보수적으로) ----
+  if (orgName && !f_target_org.value.trim()) {
+    f_target_org.value = orgName;
+    highlightAutoField(f_target_org);
+  }
+  if (startHHMM) {
+    f_start_time.value = startHHMM;
+    highlightAutoField(f_start_time);
+  }
+  if (endHHMM) {
+    f_end_time.value = endHHMM;
+    highlightAutoField(f_end_time);
+  }
+  if (guessedType) {
+    f_ir_type.value = guessedType;
+    highlightAutoField(f_ir_type);
+  }
+}
+
+function minutesToHHMM(totalMin) {
+  const h = Math.floor(totalMin / 60) % 24;
+  const m = totalMin % 60;
+  return `${pad2(h)}:${pad2(m)}`;
+}
+
+function highlightAutoField(el) {
+  el.classList.remove("auto-filled");
+  // 리플로우 강제 트리거해서 애니메이션 재실행 가능하게
+  void el.offsetWidth;
+  el.classList.add("auto-filled");
 }
 
 // ---- 진행 메시지 순환 ----
@@ -92,12 +183,12 @@ function buildAutoFields() {
   const dd = pad2(now.getDate());
   const weekday = WEEKDAY_KR[now.getDay()];
 
-  const startRaw = document.getElementById("f_start_time").value || "14:00";
-  const endRaw = document.getElementById("f_end_time").value || "15:30";
+  const startRaw = f_start_time.value || "14:00";
+  const endRaw = f_end_time.value || "15:30";
   const start = timeToKorean(startRaw);
   const end = timeToKorean(endRaw);
 
-  const targetOrg = document.getElementById("f_target_org").value.trim();
+  const targetOrg = f_target_org.value.trim();
 
   // 1. 일시 (문서용, 전체 표기)
   const datetime = `${yyyy}년 ${mm}월 ${dd}일 ${start.ampm} ${start.hh}시 ${start.mm}분 ~ ${end.hh}시 ${end.mm}분`;
@@ -113,7 +204,7 @@ function buildAutoFields() {
 
   return {
     datetime,
-    ir_type: document.getElementById("f_ir_type").value,
+    ir_type: f_ir_type.value,
     target_org: targetOrg,
     attendees: "Noel, Judy",
     notes: document.getElementById("f_notes").value.trim() || "없음",
@@ -134,7 +225,7 @@ submitBtn.addEventListener("click", async () => {
     return;
   }
 
-  const targetOrg = document.getElementById("f_target_org").value.trim();
+  const targetOrg = f_target_org.value.trim();
   if (!targetOrg) {
     errorMsg.textContent = "IR 대상기관을 입력해주세요.";
     return;
